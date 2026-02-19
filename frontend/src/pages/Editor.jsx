@@ -2,19 +2,26 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
+import { io } from "socket.io-client";
 
 function CodeEditor() {
   const { roomId } = useParams();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
+  const socket = io("https://codesaathi-backend.onrender.com");
 
   const saveTimeout = useRef(null);
 
   useEffect(() => {
+    
     const fetchRoom = async () => {
+      socket.emit("join-room", roomId);
+      socket.on("receive-code",(newcode)=>{
+        setCode(newcode);
+      });
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/rooms/${roomId}`
+          `https://codesaathi-backend.onrender.com/api/rooms/${roomId}`
         );
         setCode(res.data.code);
         setLanguage(res.data.language);
@@ -22,8 +29,10 @@ function CodeEditor() {
         console.error(error);
       }
     };
-
     fetchRoom();
+    return()=>{
+      socket.off("receive-code");
+    };
   }, [roomId]);
 
   const handleChange = (value) => {
@@ -31,6 +40,10 @@ function CodeEditor() {
 
     setCode(value);
 
+    socket.emit("code-change", {
+      roomId,
+      code: value,
+    });
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
@@ -39,7 +52,7 @@ function CodeEditor() {
       console.log("Sending PUT request...");
 
       axios.put(
-        `http://localhost:5000/api/rooms/${roomId}`,
+        `https://codesaathi-backend.onrender.com/api/rooms/${roomId}`,
         {
           code: value,
           language: language,
