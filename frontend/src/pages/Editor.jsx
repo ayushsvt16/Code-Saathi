@@ -8,28 +8,35 @@ function CodeEditor() {
   const { roomId } = useParams();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
-  const socket = io("`${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`");
 
+  const socket = useRef(null);
   const saveTimeout = useRef(null);
 
   useEffect(() => {
-    
+    socket.current = io(import.meta.env.VITE_BACKEND_URL);
+
+    socket.current.emit("join-room", roomId);
+
+    socket.current.on("receive-code", (newCode) => {
+      setCode(newCode);
+    });
+
     const fetchRoom = async () => {
-      socket.emit("join-room", roomId);
-      socket.on("receive-code",(newcode)=>{
-        setCode(newcode);
-      });
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/rooms/${roomId}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/rooms/${roomId}`
+        );
         setCode(res.data.code);
         setLanguage(res.data.language);
       } catch (error) {
         console.error(error);
       }
     };
+
     fetchRoom();
-    return()=>{
-      socket.off("receive-code");
+
+    return () => {
+      socket.current.disconnect();
     };
   }, [roomId]);
 
@@ -38,31 +45,23 @@ function CodeEditor() {
 
     setCode(value);
 
-    socket.emit("code-change", {
+    socket.current.emit("code-change", {
       roomId,
       code: value,
     });
+
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
 
     saveTimeout.current = setTimeout(() => {
-      console.log("Sending PUT request...");
-
       axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/rooms/${roomId}`,
         {
           code: value,
           language: language,
         }
-      )
-      .then(() => {
-        console.log("Auto-saved");
-      })
-      .catch((error) => {
-        console.error("Save failed:", error);
-      });
-
+      );
     }, 1000);
   };
 
