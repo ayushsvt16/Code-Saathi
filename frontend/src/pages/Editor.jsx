@@ -83,6 +83,29 @@ function CodeEditor() {
         <option value="cpp">C++</option>
       </select>
     </div>
+    <div className="flex justify-between items-center px-6 py-3 bg-[#111827] border-b border-gray-800">
+
+  {/* Room ID */}
+  <div className="flex items-center gap-3">
+    <span className="text-gray-400 text-sm">Room:</span>
+    <span className="bg-gray-800 px-3 py-1 rounded text-purple-400">
+      {roomId}
+    </span>
+  </div>
+
+  {/* Language Selector */}
+  <select
+    value={language}
+    onChange={(e) => setLanguage(e.target.value)}
+    className="bg-gray-900 border border-gray-700 px-3 py-1 rounded text-white"
+  >
+    <option value="javascript">JavaScript</option>
+    <option value="python">Python</option>
+    <option value="java">Java</option>
+    <option value="cpp">C++</option>
+  </select>
+
+</div>
 
     <Editor
       height="100%"
