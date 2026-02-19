@@ -66,20 +66,34 @@ function CodeEditor() {
   };
 
   return (
-    <div style={{ height: "100vh" }}>
-      <h3 style={{ textAlign: "center" }}>
+  <div className="h-screen bg-[#0f172a] text-white flex flex-col">
+    
+    <div className="bg-[#1e293b] px-6 py-3 flex justify-between items-center border-b border-gray-800">
+      <h2 className="font-semibold text-lg">
         Room: {roomId}
-      </h3>
+      </h2>
 
-      <Editor
-        height="90vh"
-        language={language}
-        value={code}
-        theme="vs-dark"
-        onChange={handleChange}
-      />
+      <select
+        value={language}
+        onChange={(e) => setLanguage(e.target.value)}
+        className="bg-[#0f172a] border border-gray-700 px-3 py-1 rounded"
+      >
+        <option value="javascript">JavaScript</option>
+        <option value="python">Python</option>
+        <option value="cpp">C++</option>
+      </select>
     </div>
-  );
+
+    <Editor
+      height="100%"
+      language={language}
+      value={code}
+      theme="vs-dark"
+      onChange={handleChange}
+    />
+  </div>
+);
+
 }
 
 export default CodeEditor;
