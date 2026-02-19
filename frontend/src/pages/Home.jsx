@@ -4,13 +4,20 @@ import axios from "axios";
 
 function Home() {
   const navigate = useNavigate();
+
   const [roomId, setRoomId] = useState("");
+  const [createdRoom, setCreatedRoom] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const createRoom = async () => {
-    const res = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`
-    );
-    navigate(`/editor/${res.data.roomId}`);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`
+      );
+      setCreatedRoom(res.data.roomId);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const joinRoom = () => {
@@ -19,9 +26,17 @@ function Home() {
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/editor/${createdRoom}`
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center">
-      
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#0f172a] text-white flex flex-col items-center justify-center">
+
       <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
         CodeSync
       </h1>
@@ -54,6 +69,60 @@ function Home() {
       <p className="mt-6 text-gray-400 text-sm">
         Real-time collaborative coding 🚀
       </p>
+
+      {/* MODAL */}
+      {createdRoom && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
+          <div className="bg-[#1e293b] p-8 rounded-2xl w-[400px] text-center space-y-4 shadow-2xl">
+
+            <h2 className="text-2xl font-semibold text-green-400">
+              Room Created 🎉
+            </h2>
+
+            <div className="bg-gray-800 px-4 py-3 rounded text-purple-400 font-mono break-all">
+              {window.location.origin}/editor/{createdRoom}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={copyToClipboard}
+                className="flex-1 bg-blue-600 py-2 rounded hover:bg-blue-500 transition"
+              >
+                {copied ? "Copied ✓" : "Copy Link"}
+              </button>
+
+              <button
+                onClick={() =>
+                  navigator.share
+                    ? navigator.share({
+                        title: "Join my CodeSync room",
+                        url: `${window.location.origin}/editor/${createdRoom}`,
+                      })
+                    : copyToClipboard()
+                }
+                className="flex-1 bg-purple-600 py-2 rounded hover:bg-purple-500 transition"
+              >
+                Share
+              </button>
+            </div>
+
+            <button
+              onClick={() => navigate(`/editor/${createdRoom}`)}
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            >
+              Enter Room
+            </button>
+
+            <button
+              onClick={() => setCreatedRoom(null)}
+              className="text-gray-400 text-sm hover:text-white"
+            >
+              Close
+            </button>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
