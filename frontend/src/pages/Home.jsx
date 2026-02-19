@@ -8,11 +8,13 @@ function Home() {
   const [roomId, setRoomId] = useState("");
   const [createdRoom, setCreatedRoom] = useState(null);
   const [copied, setCopied] = useState(false);
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL ||
+  "https://codesaathi-backend.onrender.com";
 
   const createRoom = async () => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`
+        `${BASE_URL}/api/rooms/create`
       );
       setCreatedRoom(res.data.roomId);
     } catch (error) {
