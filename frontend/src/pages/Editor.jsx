@@ -8,7 +8,7 @@ function CodeEditor() {
   const { roomId } = useParams();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
-  const socket = io("import.meta.env.VITE_BACKEND_URL");
+  const socket = io("`${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`");
 
   const saveTimeout = useRef(null);
 
@@ -20,9 +20,7 @@ function CodeEditor() {
         setCode(newcode);
       });
       try {
-        const res = await axios.get(
-          `import.meta.env.VITE_BACKEND_URL/api/rooms/${roomId}`
-        );
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/rooms/${roomId}`);
         setCode(res.data.code);
         setLanguage(res.data.language);
       } catch (error) {
@@ -52,7 +50,7 @@ function CodeEditor() {
       console.log("Sending PUT request...");
 
       axios.put(
-        `import.meta.env.VITE_BACKEND_URL/api/rooms/${roomId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/rooms/${roomId}`,
         {
           code: value,
           language: language,

@@ -9,7 +9,7 @@ function Home() {
   const createRoom = async () => {
     try {
       const res = await axios.post(
-        "import.meta.env.VITE_BACKEND_URL"
+        `${import.meta.env.VITE_BACKEND_URL}/api/rooms/create`
       );
       navigate(`/editor/${res.data.roomId}`);
     } catch (error) {
