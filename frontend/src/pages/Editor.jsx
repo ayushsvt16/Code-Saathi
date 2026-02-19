@@ -1,11 +1,14 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import Editor from "@monaco-editor/react";
 
-function Editor() {
+function CodeEditor() {
   const { roomId } = useParams();
   const [code, setCode] = useState("");
-  const [language, setLanguage] = useState("");
+  const [language, setLanguage] = useState("javascript");
+
+  const saveTimeout = useRef(null);
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -23,20 +26,50 @@ function Editor() {
     fetchRoom();
   }, [roomId]);
 
+  const handleChange = (value) => {
+    if (typeof value !== "string") return;
+
+    setCode(value);
+
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+
+    saveTimeout.current = setTimeout(() => {
+      console.log("Sending PUT request...");
+
+      axios.put(
+        `http://localhost:5000/api/rooms/${roomId}`,
+        {
+          code: value,
+          language: language,
+        }
+      )
+      .then(() => {
+        console.log("Auto-saved");
+      })
+      .catch((error) => {
+        console.error("Save failed:", error);
+      });
+
+    }, 1000);
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Editor Room: {roomId}</h2>
+    <div style={{ height: "100vh" }}>
+      <h3 style={{ textAlign: "center" }}>
+        Room: {roomId}
+      </h3>
 
-      <p><strong>Language:</strong> {language}</p>
-
-      <textarea
+      <Editor
+        height="90vh"
+        language={language}
         value={code}
-        onChange={(e) => setCode(e.target.value)}
-        rows="15"
-        cols="80"
+        theme="vs-dark"
+        onChange={handleChange}
       />
     </div>
   );
 }
 
-export default Editor;
+export default CodeEditor;
