@@ -8,7 +8,7 @@ function CodeEditor() {
   const { roomId } = useParams();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
-  const socket = io("https://codesaathi-backend.onrender.com");
+  const socket = io("import.meta.env.VITE_BACKEND_URL");
 
   const saveTimeout = useRef(null);
 
@@ -21,7 +21,7 @@ function CodeEditor() {
       });
       try {
         const res = await axios.get(
-          `https://codesaathi-backend.onrender.com/api/rooms/${roomId}`
+          `import.meta.env.VITE_BACKEND_URL/api/rooms/${roomId}`
         );
         setCode(res.data.code);
         setLanguage(res.data.language);
@@ -52,7 +52,7 @@ function CodeEditor() {
       console.log("Sending PUT request...");
 
       axios.put(
-        `https://codesaathi-backend.onrender.com/api/rooms/${roomId}`,
+        `import.meta.env.VITE_BACKEND_URL/api/rooms/${roomId}`,
         {
           code: value,
           language: language,

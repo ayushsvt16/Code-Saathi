@@ -9,7 +9,7 @@ function Home() {
   const createRoom = async () => {
     try {
       const res = await axios.post(
-        "https://codesaathi-backend.onrender.com"
+        "import.meta.env.VITE_BACKEND_URL"
       );
       navigate(`/editor/${res.data.roomId}`);
     } catch (error) {
