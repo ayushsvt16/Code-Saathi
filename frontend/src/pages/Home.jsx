@@ -40,7 +40,7 @@ function Home() {
     <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#0f172a] text-white flex flex-col items-center justify-center">
 
       <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-        CodeSync
+        Code With Saathi
       </h1>
 
       <div className="bg-[#1e293b] p-8 rounded-2xl shadow-2xl w-[350px] space-y-4">
