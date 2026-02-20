@@ -4,6 +4,8 @@ import axios from "axios";
 import AnimatedBackground from "../components/AnimatedBackground";
 import RoomModal from "../components/RoomModal";
 import NeonBackground from "../components/NeonBackground";
+import CyberBackground from "../components/CyberBackground";
+import CursorGlow from "../components/CursorGlow";
 
 function Home() {
   const navigate = useNavigate();
@@ -40,7 +42,8 @@ function Home() {
       <AnimatedBackground />
 
       <div className="relative min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center">
-
+        <CyberBackground />
+        <CursorGlow />
         <NeonBackground />
         <h1
           onClick={() => navigate("/")}
