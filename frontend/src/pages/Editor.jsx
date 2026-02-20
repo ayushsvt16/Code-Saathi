@@ -1,13 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { io } from "socket.io-client";
-import { useNavigate } from "react-router-dom";
-const navigate = useNavigate();
 
 function CodeEditor() {
   const { roomId } = useParams();
+  const navigate = useNavigate(); // ✅ INSIDE COMPONENT
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
@@ -17,7 +16,6 @@ function CodeEditor() {
   const saveTimeout = useRef(null);
 
   useEffect(() => {
-    // Create socket connection
     socket.current = io(import.meta.env.VITE_BACKEND_URL);
 
     socket.current.emit("join-room", roomId);
@@ -26,7 +24,6 @@ function CodeEditor() {
       setCode(newCode);
     });
 
-    // Fetch existing room data
     const fetchRoom = async () => {
       try {
         const res = await axios.get(
@@ -52,18 +49,15 @@ function CodeEditor() {
     setCode(value);
     setSaveStatus("Saving...");
 
-    // Real-time sync
     socket.current.emit("code-change", {
       roomId,
       code: value,
     });
 
-    // Clear previous timer
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
 
-    // Auto-save after 1 sec
     saveTimeout.current = setTimeout(() => {
       axios
         .put(
@@ -88,8 +82,8 @@ function CodeEditor() {
       {/* Top Bar */}
       <div className="bg-[#1e293b] px-6 py-3 flex justify-between items-center border-b border-gray-800">
 
-        <div className="bg-[#1e293b] px-6 py-3 flex justify-between items-center border-b border-gray-800">
-
+        {/* Left */}
+        <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/")}
             className="text-gray-400 hover:text-white"
@@ -99,27 +93,9 @@ function CodeEditor() {
 
           <h2
             onClick={() => navigate("/")}
-            className="font-semibold text-lg cursor-pointer text-purple-400"
+            className="font-bold text-xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent cursor-pointer"
           >
             Code With Saathi
-          </h2>
-
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="bg-gray-900 border border-gray-700 px-3 py-1 rounded text-white"
-          >
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-            <option value="cpp">C++</option>
-          </select>
-
-        </div>
-        {/* Left */}
-        <div className="flex items-center gap-4">
-          <h2 className="font-bold text-xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            CodeSync
           </h2>
 
           <span className="bg-gray-800 px-3 py-1 rounded text-purple-400 text-sm">
@@ -129,13 +105,10 @@ function CodeEditor() {
 
         {/* Right */}
         <div className="flex items-center gap-4">
-
-          {/* Save Status */}
           <span className="text-sm text-green-400">
             {saveStatus}
           </span>
 
-          {/* Language Selector */}
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
