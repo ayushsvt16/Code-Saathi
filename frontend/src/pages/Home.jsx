@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import AnimatedBackground from "../components/AnimatedBackground";
 import RoomModal from "../components/RoomModal";
+import NeonBackground from "../components/NeonBackground";
 
 function Home() {
   const navigate = useNavigate();
@@ -38,20 +39,23 @@ function Home() {
     <>
       <AnimatedBackground />
 
-      <div className="min-h-screen flex flex-col items-center justify-center text-white">
-        
+      <div className="relative min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center">
+
+        <NeonBackground />
         <h1
           onClick={() => navigate("/")}
           className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent cursor-pointer"
         >
-          Code With Saathi
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(139,92,246,0.8)]">
+            Code With Saathi
+          </h1>
         </h1>
 
-        <div className="bg-[#1e293b] p-8 rounded-2xl shadow-2xl w-[350px] space-y-4">
-          
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_0_40px_rgba(139,92,246,0.3)] w-[350px] space-y-4">
+
           <button
             onClick={createRoom}
-            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg font-semibold shadow-[0_0_20px_rgba(139,92,246,0.7)] hover:scale-105 transition"
           >
             Create New Room
           </button>
