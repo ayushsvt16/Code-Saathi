@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 
 function CodeEditor() {
   const { roomId } = useParams();
-  const navigate = useNavigate(); // ✅ INSIDE COMPONENT
+  const navigate = useNavigate();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
@@ -14,6 +14,9 @@ function CodeEditor() {
 
   const socket = useRef(null);
   const saveTimeout = useRef(null);
+
+  const [output, setOutput] = useState("");
+  const [running, setRunning] = useState(false); //for compiler
 
   useEffect(() => {
     socket.current = io(import.meta.env.VITE_BACKEND_URL);
@@ -75,7 +78,31 @@ function CodeEditor() {
         });
     }, 1000);
   };
+  const runCode = async () => {
+    try {
+      setRunning(true);
+      setOutput("Running...");
 
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/execute`,
+        {
+          code,
+          language,
+        }
+      );
+
+      setOutput(
+        res.data.stdout ||
+        res.data.stderr ||
+        res.data.compile_output ||
+        "No Output"
+      );
+    } catch {
+      setOutput("Execution Error");
+    } finally {
+      setRunning(false);
+    }
+  };
   return (
     <div className="h-screen bg-gradient-to-br from-[#0f172a] via-[#111827] to-[#0f172a] text-white flex flex-col">
 
@@ -108,7 +135,12 @@ function CodeEditor() {
           <span className="text-sm text-green-400">
             {saveStatus}
           </span>
-
+          <button
+            onClick={runCode}
+            className="bg-green-600 px-4 py-1 rounded hover:bg-green-500"
+          >
+            {running ? "Running..." : "Run"}
+          </button>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -130,6 +162,10 @@ function CodeEditor() {
         theme="vs-dark"
         onChange={handleChange}
       />
+      <div className="bg-black text-green-400 p-4 h-40 overflow-auto">
+        <h3 className="text-sm text-gray-400 mb-2">Output</h3>
+        <pre>{output}</pre>
+      </div>
     </div>
   );
 }

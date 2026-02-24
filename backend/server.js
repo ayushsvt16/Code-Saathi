@@ -4,7 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const http = require("http");
 const { Server } = require("socket.io");
-
+const executeRoutes = require("./routes/executeRoutes");
 dotenv.config();
 
 const roomRoutes = require("./routes/roomRoutes");
@@ -19,6 +19,7 @@ const io = new Server(server, {
   }
 });
 
+app.use("/api/execute", executeRoutes);
 app.use(cors());
 app.use(express.json());
 app.use("/api/rooms", roomRoutes);
