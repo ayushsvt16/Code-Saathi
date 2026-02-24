@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const router = express.Router();
 
-const JUDGE0_URL = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true";
+const JUDGE0_URL ="https://judge029.p.rapidapi.com/submissions/1df59684-e5e7-4ce1-9975-ff732823e37e?base64_encoded=true&fields=*";
 
 router.post("/", async (req, res) => {
   const { code, language } = req.body;
@@ -26,14 +26,19 @@ router.post("/", async (req, res) => {
         headers: {
           "Content-Type": "application/json",
           "X-RapidAPI-Key": process.env.RAPID_API_KEY,
-          "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+          "X-RapidAPI-Host": "judge029.p.rapidapi.com",
         },
       }
     );
 
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: "Execution failed" });
+    console.log("🔥 Judge0 Error:");
+    console.log(error.response?.data || error.message);
+
+    res.status(500).json({
+      error: error.response?.data || error.message
+    });
   }
 });
 
